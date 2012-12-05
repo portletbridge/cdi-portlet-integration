@@ -1,0 +1,179 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>9</version>
+        <relativePath />
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.gatein</groupId>
+    <artifactId>cdi-portlet-integration</artifactId>
+    <version>1.0.0.Final-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Integration of CDI into portlets</name>
+
+    <properties>
+        <!-- Testing versions -->
+        <version.junit>4.10</version.junit>
+        <version.arquillian>1.0.2.Final</version.arquillian>
+        <version.shrinkwrap.descriptor>2.0.0-alpha-4</version.shrinkwrap.descriptor>
+        <version.shrinkwrap.resolver>2.0.0-alpha-4</version.shrinkwrap.resolver>
+        <version.arquillian.graphene>2.0.0.Alpha2</version.arquillian.graphene>
+        <version.arquillian.extension.portal>1.0.0.Alpha2</version.arquillian.extension.portal>
+        <version.gatein.portal.testing>1.0.0.Alpha3</version.gatein.portal.testing>
+        <version.pluto.portal.testing>1.0.0.Alpha3</version.pluto.portal.testing>
+        <version.jbossas7.container>7.1.1.Final</version.jbossas7.container>
+
+        <!-- Plugin versions -->
+        <version.plugin.surefire>2.12</version.plugin.surefire>
+        <version.plugin.checkstyle>2.9.1</version.plugin.checkstyle>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git://github.com/portletbridge/cdi-portlet-integration.git</connection>
+        <developerConnection>scm:git:git://github.com/portletbridge/cdi-portlet-integration.git</developerConnection>
+        <url>https://github.com/portletbridge/cdi-portlet-integration</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>kenfinnigan</id>
+            <name>Ken Finnigan</name>
+            <email>ken@kenfinnigan.me</email>
+        </developer>
+    </developers>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+                <artifactId>shrinkwrap-descriptors-bom</artifactId>
+                <version>${version.shrinkwrap.descriptor}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                <artifactId>shrinkwrap-resolver-bom</artifactId>
+                <version>${version.shrinkwrap.resolver}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${version.arquillian}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Spec dependencies -->
+        <dependency>
+            <groupId>javax.portlet</groupId>
+            <artifactId>portlet-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.jboss.arquillian.graphene</groupId>
+            <artifactId>graphene-webdriver</artifactId>
+            <version>${version.arquillian.graphene}</version>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-portal-impl</artifactId>
+            <version>${version.arquillian.extension.portal}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- GateIn Testing dependencies -->
+        <dependency>
+            <groupId>org.jboss.portletbridge.testing.gatein</groupId>
+            <artifactId>gatein-arquillian-extension</artifactId>
+            <version>${version.gatein.portal.testing}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.plugin.surefire}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- Enforce Maven Environment -->
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven-environment</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <requireMavenVersion>
+                            <version>[3.0.4,)</version>
+                        </requireMavenVersion>
+                        <requireProperty>
+                            <property>env.JAVA_HOME</property>
+                            <message>"JAVA_HOME needs to be set to compile"</message>
+                        </requireProperty>
+                    </rules>
+                </configuration>
+            </plugin>
+
+            <!-- Release plugin -->
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushChanges>false</pushChanges>
+                    <localCheckout>true</localCheckout>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
