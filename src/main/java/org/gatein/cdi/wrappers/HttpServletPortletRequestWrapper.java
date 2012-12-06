@@ -197,7 +197,12 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
     public long getDateHeader(String name) {
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         try {
-            Date ifModifiedSinceDate = format.parse(request.getProperty("If-Modified-Since"));
+            String dateString = request.getProperty("If-Modified-Since");
+            if (null == dateString || dateString.length() == 0) {
+                return -1;
+            }
+
+            Date ifModifiedSinceDate = format.parse(dateString);
             return ifModifiedSinceDate.getTime();
         } catch (ParseException ex) {
             return -1;
