@@ -93,7 +93,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
         if (request instanceof ClientDataRequest) {
             return ((ClientDataRequest) request).getContentType();
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
@@ -273,7 +273,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getQueryString() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
