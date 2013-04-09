@@ -48,8 +48,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public long getCreationTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return getWrapped().getCreationTime();
     }
 
     /**
@@ -57,8 +56,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return getWrapped().getId();
     }
 
     /**
@@ -66,8 +64,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public long getLastAccessedTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return getWrapped().getLastAccessedTime();
     }
 
     /**
@@ -75,8 +72,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public ServletContext getServletContext() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -84,8 +80,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public void setMaxInactiveInterval(int interval) {
-        // TODO Auto-generated method stub
-
+        getWrapped().setMaxInactiveInterval(interval);
     }
 
     /**
@@ -93,17 +88,16 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public int getMaxInactiveInterval() {
-        // TODO Auto-generated method stub
-        return 0;
+        return getWrapped().getMaxInactiveInterval();
     }
 
     /**
      * @see javax.servlet.http.HttpSession#getSessionContext()
      */
     @Override
+    @Deprecated
     public HttpSessionContext getSessionContext() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -118,9 +112,9 @@ public class PortletSessionWrapper implements HttpSession {
      * @see javax.servlet.http.HttpSession#getValue(java.lang.String)
      */
     @Override
+    @Deprecated
     public Object getValue(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -135,9 +129,9 @@ public class PortletSessionWrapper implements HttpSession {
      * @see javax.servlet.http.HttpSession#getValueNames()
      */
     @Override
+    @Deprecated
     public String[] getValueNames() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -152,9 +146,9 @@ public class PortletSessionWrapper implements HttpSession {
      * @see javax.servlet.http.HttpSession#putValue(java.lang.String, java.lang.Object)
      */
     @Override
+    @Deprecated
     public void putValue(String name, Object value) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -169,9 +163,9 @@ public class PortletSessionWrapper implements HttpSession {
      * @see javax.servlet.http.HttpSession#removeValue(java.lang.String)
      */
     @Override
+    @Deprecated
     public void removeValue(String name) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -179,7 +173,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public void invalidate() {
-        // TODO Auto-generated method stub
+        getWrapped().invalidate();
 
     }
 
@@ -188,8 +182,7 @@ public class PortletSessionWrapper implements HttpSession {
      */
     @Override
     public boolean isNew() {
-        // TODO Auto-generated method stub
-        return false;
+        return getWrapped().isNew();
     }
 
 }

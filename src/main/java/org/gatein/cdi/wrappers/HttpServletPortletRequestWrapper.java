@@ -24,8 +24,10 @@ package org.gatein.cdi.wrappers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -33,10 +35,8 @@ import java.util.Locale;
 import javax.portlet.ClientDataRequest;
 import javax.portlet.PortletRequest;
 import javax.portlet.filter.PortletRequestWrapper;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 /**
  * Abstract implementation of {@link PortletRequestWrapper} that implements {@link HttpServletRequest} to support casting
@@ -47,10 +47,20 @@ import javax.servlet.http.HttpSession;
 public abstract class HttpServletPortletRequestWrapper extends PortletRequestWrapper implements HttpServletRequest {
 
     private PortletRequest request;
+    private HttpServletRequestWrapper servletRequest = null;
 
     public HttpServletPortletRequestWrapper(PortletRequest request) {
         super(request);
         this.request = request;
+
+        try {
+            Class clazz = Class.forName("org.gatein.pc.portlet.impl.jsr168.api.PortletRequestImpl");
+            Method method = clazz.getMethod("getRealRequest");
+            Object result = method.invoke(request);
+            servletRequest = (HttpServletRequestWrapper) result;
+        } catch (Exception e) {
+            // Ignore. Just means we're not running in GateIn Portlet Container
+        }
     }
 
     /**
@@ -58,10 +68,13 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getCharacterEncoding() {
+        if (null != servletRequest) {
+            return servletRequest.getCharacterEncoding();
+        }
         if (request instanceof ClientDataRequest) {
             return ((ClientDataRequest) request).getCharacterEncoding();
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
@@ -69,6 +82,9 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public void setCharacterEncoding(String enc) throws UnsupportedEncodingException {
+        if (null != servletRequest) {
+            servletRequest.setCharacterEncoding(enc);
+        }
         if (request instanceof ClientDataRequest) {
             ((ClientDataRequest) request).setCharacterEncoding(enc);
         }
@@ -79,10 +95,13 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public int getContentLength() {
+        if (null != servletRequest) {
+            return servletRequest.getContentLength();
+        }
         if (request instanceof ClientDataRequest) {
             return ((ClientDataRequest) request).getContentLength();
         }
-        throw new UnsupportedOperationException();
+        return 0;
     }
 
     /**
@@ -90,6 +109,9 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getContentType() {
+        if (null != servletRequest) {
+            return servletRequest.getContentType();
+        }
         if (request instanceof ClientDataRequest) {
             return ((ClientDataRequest) request).getContentType();
         }
@@ -101,10 +123,13 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        if (null != servletRequest) {
+            return servletRequest.getInputStream();
+        }
         if (request instanceof ClientDataRequest) {
             return new ServletInputStreamWrapper((ClientDataRequest) request);
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
@@ -112,7 +137,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getProtocol() {
-        throw new UnsupportedOperationException();
+        return "HTTP/1.1";
     }
 
     /**
@@ -120,10 +145,13 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public BufferedReader getReader() throws IOException {
+        if (null != servletRequest) {
+            return servletRequest.getReader();
+        }
         if (request instanceof ClientDataRequest) {
             return ((ClientDataRequest) request).getReader();
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
@@ -131,7 +159,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getRemoteAddr() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getRemoteAddr();
+        }
+        return null;
     }
 
     /**
@@ -139,7 +170,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getRemoteHost() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getRemoteHost();
+        }
+        return null;
     }
 
     /**
@@ -147,15 +181,19 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getRequestDispatcher(path);
+        }
+        return null;
     }
 
     /**
      * @see javax.servlet.ServletRequest#getRealPath(java.lang.String)
      */
     @Override
+    @Deprecated
     public String getRealPath(String path) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
@@ -163,7 +201,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public int getRemotePort() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getRemotePort();
+        }
+        return 0;
     }
 
     /**
@@ -171,7 +212,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getLocalName() {
-        throw new UnsupportedOperationException();
+        return request.getServerName();
     }
 
     /**
@@ -179,7 +220,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getLocalAddr() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getLocalAddr();
+        }
+        return null;
     }
 
     /**
@@ -195,6 +239,9 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public long getDateHeader(String name) {
+        if (null != servletRequest) {
+            return servletRequest.getDateHeader(name);
+        }
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         try {
             String dateString = request.getProperty("If-Modified-Since");
@@ -214,7 +261,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getHeader(String name) {
-        throw new UnsupportedOperationException();
+        return request.getProperty(name);
     }
 
     /**
@@ -222,7 +269,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public Enumeration getHeaders(String name) {
-        throw new UnsupportedOperationException();
+        return request.getProperties(name);
     }
 
     /**
@@ -230,7 +277,7 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public Enumeration getHeaderNames() {
-        throw new UnsupportedOperationException();
+        return request.getPropertyNames();
     }
 
     /**
@@ -238,7 +285,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public int getIntHeader(String name) {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getIntHeader(name);
+        }
+        return 0;
     }
 
     /**
@@ -246,10 +296,13 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getMethod() {
+        if (null != servletRequest) {
+            return servletRequest.getMethod();
+        }
         if (request instanceof ClientDataRequest) {
             return ((ClientDataRequest) request).getMethod();
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
@@ -257,7 +310,14 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getPathInfo() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getPathInfo();
+        }
+        Object obj = request.getAttribute("javax.servlet.include.path_info");
+        if (null != obj && obj instanceof String) {
+            return (String) obj;
+        }
+        return null;
     }
 
     /**
@@ -265,7 +325,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getPathTranslated() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getPathTranslated();
+        }
+        return null;
     }
 
     /**
@@ -273,6 +336,13 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getQueryString() {
+        if (null != servletRequest) {
+            return servletRequest.getQueryString();
+        }
+        Object obj = request.getAttribute("javax.servlet.include.query_string");
+        if (null != obj && obj instanceof String) {
+            return (String) obj;
+        }
         return null;
     }
 
@@ -281,7 +351,14 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getRequestURI() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getRequestURI();
+        }
+        Object obj = request.getAttribute("javax.servlet.include.request_uri");
+        if (null != obj && obj instanceof String) {
+            return (String) obj;
+        }
+        return null;
     }
 
     /**
@@ -289,7 +366,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public StringBuffer getRequestURL() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getRequestURL();
+        }
+        return null;
     }
 
     /**
@@ -297,7 +377,14 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public String getServletPath() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.getServletPath();
+        }
+        Object obj = request.getAttribute("javax.servlet.include.servlet_path");
+        if (null != obj && obj instanceof String) {
+            return (String) obj;
+        }
+        return null;
     }
 
     /**
@@ -305,6 +392,9 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public HttpSession getSession(boolean create) {
+        if (null != servletRequest) {
+            return servletRequest.getSession(create);
+        }
         return new PortletSessionWrapper(request.getPortletSession(create));
     }
 
@@ -313,6 +403,9 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public HttpSession getSession() {
+        if (null != servletRequest) {
+            return servletRequest.getSession();
+        }
         return new PortletSessionWrapper(request.getPortletSession());
     }
 
@@ -321,7 +414,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public boolean isRequestedSessionIdFromCookie() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.isRequestedSessionIdFromCookie();
+        }
+        return false;
     }
 
     /**
@@ -329,7 +425,10 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public boolean isRequestedSessionIdFromURL() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.isRequestedSessionIdFromURL();
+        }
+        return false;
     }
 
     /**
@@ -337,7 +436,103 @@ public abstract class HttpServletPortletRequestWrapper extends PortletRequestWra
      */
     @Override
     public boolean isRequestedSessionIdFromUrl() {
-        throw new UnsupportedOperationException();
+        if (null != servletRequest) {
+            return servletRequest.isRequestedSessionIdFromUrl();
+        }
+        return false;
     }
 
+    @Override
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+        if (null != servletRequest) {
+            return servletRequest.authenticate(response);
+        }
+        return false;
+    }
+
+    @Override
+    public void login(String username, String password) throws ServletException {
+        if (null != servletRequest) {
+            servletRequest.login(username, password);
+        }
+    }
+
+    @Override
+    public void logout() throws ServletException {
+        if (null != servletRequest) {
+            servletRequest.logout();
+        }
+    }
+
+    @Override
+    public Collection<Part> getParts() throws IOException, ServletException {
+        if (null != servletRequest) {
+            return servletRequest.getParts();
+        }
+        return null;
+    }
+
+    @Override
+    public Part getPart(String name) throws IOException, ServletException {
+        if (null != servletRequest) {
+            return servletRequest.getPart(name);
+        }
+        return null;
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+        if (null != servletRequest) {
+            return servletRequest.getServletContext();
+        }
+        return null;
+    }
+
+    @Override
+    public AsyncContext startAsync() throws IllegalStateException {
+        if (null != servletRequest) {
+            return servletRequest.startAsync();
+        }
+        return null;
+    }
+
+    @Override
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+        if (null != servletRequest) {
+            return servletRequest.startAsync(servletRequest, servletResponse);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isAsyncStarted() {
+        if (null != servletRequest) {
+            return servletRequest.isAsyncStarted();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isAsyncSupported() {
+        if (null != servletRequest) {
+            return servletRequest.isAsyncSupported();
+        }
+        return false;
+    }
+
+    @Override
+    public AsyncContext getAsyncContext() {
+        if (null != servletRequest) {
+            return servletRequest.getAsyncContext();
+        }
+        return null;
+    }
+
+    @Override
+    public DispatcherType getDispatcherType() {
+        if (null != servletRequest) {
+            return servletRequest.getDispatcherType();
+        }
+        return null;
+    }
 }

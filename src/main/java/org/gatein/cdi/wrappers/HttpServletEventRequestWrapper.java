@@ -43,4 +43,9 @@ public class HttpServletEventRequestWrapper extends HttpServletPortletRequestWra
     public Event getEvent() {
         return request.getEvent();
     }
+
+    @Override
+    public String getMethod() {
+        return request.getMethod();
+    }
 }

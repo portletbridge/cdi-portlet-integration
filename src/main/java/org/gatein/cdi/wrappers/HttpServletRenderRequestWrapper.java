@@ -42,4 +42,9 @@ public class HttpServletRenderRequestWrapper extends HttpServletPortletRequestWr
     public String getETag() {
         return request.getETag();
     }
+
+    @Override
+    public String getMethod() {
+        return "GET";
+    }
 }
