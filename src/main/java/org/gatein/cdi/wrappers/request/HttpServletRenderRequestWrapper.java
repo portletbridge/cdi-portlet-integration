@@ -19,32 +19,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.gatein.cdi.wrappers;
+package org.gatein.cdi.wrappers.request;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
-import javax.portlet.ResourceRequest;
+import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Wraps {@link ResourceRequest} for use with {@link HttpServletRequest}.
+ * Wraps {@link RenderRequest} for use with {@link HttpServletRequest}.
  *
  * @author <a href="http://community.jboss.org/people/kenfinni">Ken Finnigan</a>
  */
-public class HttpServletResourceRequestWrapper extends HttpServletPortletRequestWrapper implements ResourceRequest {
+public class HttpServletRenderRequestWrapper extends HttpServletPortletRequestWrapper implements RenderRequest {
 
-    private ResourceRequest request;
+    private RenderRequest request;
 
-    public HttpServletResourceRequestWrapper(ResourceRequest request) {
+    public HttpServletRenderRequestWrapper(RenderRequest request) {
         super(request);
         this.request = request;
-    }
-
-    @Override
-    public InputStream getPortletInputStream() throws IOException {
-        return request.getPortletInputStream();
     }
 
     @Override
@@ -53,17 +44,7 @@ public class HttpServletResourceRequestWrapper extends HttpServletPortletRequest
     }
 
     @Override
-    public String getResourceID() {
-        return request.getResourceID();
-    }
-
-    @Override
-    public Map<String, String[]> getPrivateRenderParameterMap() {
-        return request.getPrivateRenderParameterMap();
-    }
-
-    @Override
-    public String getCacheability() {
-        return request.getCacheability();
+    public String getMethod() {
+        return "GET";
     }
 }

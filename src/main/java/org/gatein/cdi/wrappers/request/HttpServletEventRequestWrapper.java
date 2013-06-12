@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.gatein.cdi.wrappers;
+package org.gatein.cdi.wrappers.request;
 
 import javax.portlet.Event;
 import javax.portlet.EventRequest;

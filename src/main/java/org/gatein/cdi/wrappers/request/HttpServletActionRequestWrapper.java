@@ -19,32 +19,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.gatein.cdi.wrappers;
+package org.gatein.cdi.wrappers.request;
 
-import javax.portlet.RenderRequest;
+import javax.portlet.ActionRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Wraps {@link RenderRequest} for use with {@link HttpServletRequest}.
+ * Wraps {@link ActionRequest} for use with {@link HttpServletRequest}.
  *
  * @author <a href="http://community.jboss.org/people/kenfinni">Ken Finnigan</a>
  */
-public class HttpServletRenderRequestWrapper extends HttpServletPortletRequestWrapper implements RenderRequest {
+public class HttpServletActionRequestWrapper extends HttpServletPortletRequestWrapper implements ActionRequest {
 
-    private RenderRequest request;
+    private ActionRequest request;
 
-    public HttpServletRenderRequestWrapper(RenderRequest request) {
+    public HttpServletActionRequestWrapper(ActionRequest request) {
         super(request);
         this.request = request;
     }
 
     @Override
-    public String getETag() {
-        return request.getETag();
+    public InputStream getPortletInputStream() throws IOException {
+        return request.getPortletInputStream();
     }
 
-    @Override
-    public String getMethod() {
-        return "GET";
-    }
 }

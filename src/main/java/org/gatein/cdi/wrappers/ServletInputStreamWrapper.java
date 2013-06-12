@@ -21,11 +21,10 @@
  */
 package org.gatein.cdi.wrappers;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.portlet.ClientDataRequest;
 import javax.servlet.ServletInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Enable an {@link InputStream} from a {@link ClientDataRequest} to be used as a {@link ServletInputStream}.

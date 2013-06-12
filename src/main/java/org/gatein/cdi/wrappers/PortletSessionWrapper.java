@@ -21,12 +21,11 @@
  */
 package org.gatein.cdi.wrappers;
 
-import java.util.Enumeration;
-
 import javax.portlet.PortletSession;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.util.Enumeration;
 
 /**
  * @author <a href="http://community.jboss.org/people/kenfinni">Ken Finnigan</a>
