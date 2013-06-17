@@ -22,7 +22,7 @@ To enable this integration for your JSF portlet, simply add the following filter
         <portlet-name>[Name of your portlet as defined in portlet-name]</portlet-name>
     </filter-mapping>
 
-The above example uses the filter that wraps Portlet Request objects only. If you want to use the filter that wraps Portlet response objects as well, change the *filter-class* tag content with
+The above example uses the filter that wraps Portlet Request objects only. If you want to use the filter that wraps Portlet response objects as well, change the *filter-class* tag content to
 `org.gatein.cdi.PortletCDIResponseFilter`.
 
 ## What is supported
