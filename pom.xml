@@ -11,7 +11,7 @@
 
     <groupId>org.gatein</groupId>
     <artifactId>cdi-portlet-integration</artifactId>
-    <version>1.0.2.Final-SNAPSHOT</version>
+    <version>1.0.2.Final</version>
     <packaging>jar</packaging>
     <name>Integration of CDI into portlets</name>
 
