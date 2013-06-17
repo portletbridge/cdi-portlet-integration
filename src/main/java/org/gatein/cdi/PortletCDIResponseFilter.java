@@ -21,7 +21,14 @@
  */
 package org.gatein.cdi;
 
-import java.io.IOException;
+import org.gatein.cdi.wrappers.request.HttpServletActionRequestWrapper;
+import org.gatein.cdi.wrappers.request.HttpServletEventRequestWrapper;
+import org.gatein.cdi.wrappers.request.HttpServletRenderRequestWrapper;
+import org.gatein.cdi.wrappers.request.HttpServletResourceRequestWrapper;
+import org.gatein.cdi.wrappers.response.HttpServletActionResponseWrapper;
+import org.gatein.cdi.wrappers.response.HttpServletEventResponseWrapper;
+import org.gatein.cdi.wrappers.response.HttpServletRenderResponseWrapper;
+import org.gatein.cdi.wrappers.response.HttpServletResourceResponseWrapper;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -38,28 +45,19 @@ import javax.portlet.filter.FilterChain;
 import javax.portlet.filter.FilterConfig;
 import javax.portlet.filter.RenderFilter;
 import javax.portlet.filter.ResourceFilter;
-import javax.servlet.http.HttpServletRequest;
-
-import org.gatein.cdi.wrappers.request.HttpServletActionRequestWrapper;
-import org.gatein.cdi.wrappers.request.HttpServletEventRequestWrapper;
-import org.gatein.cdi.wrappers.request.HttpServletRenderRequestWrapper;
-import org.gatein.cdi.wrappers.request.HttpServletResourceRequestWrapper;
-import org.gatein.cdi.wrappers.response.HttpServletActionResponseWrapper;
-import org.gatein.cdi.wrappers.response.HttpServletEventResponseWrapper;
-import org.gatein.cdi.wrappers.response.HttpServletRenderResponseWrapper;
-import org.gatein.cdi.wrappers.response.HttpServletResourceResponseWrapper;
+import java.io.IOException;
 
 /**
- * Filter that implements doFilter() from {@link ActionFilter}, {@link EventFilter}, {@link ResourceFilter}, and
- * {@link RenderFilter} to wrap the respective {@link javax.portlet.PortletRequest} with the appropriate wrapper class that implements
- * {@link HttpServletRequest}.
+ * Filter that implements doFilter() from {@link javax.portlet.filter.ActionFilter}, {@link javax.portlet.filter.EventFilter}, {@link javax.portlet.filter.ResourceFilter}, and
+ * {@link javax.portlet.filter.RenderFilter} to wrap the respective {@link javax.portlet.PortletRequest} with the appropriate wrapper class that implements
+ * {@link javax.servlet.http.HttpServletRequest}.
  *
  * This enables CDI implementations to not be concerned with specific handling for {@link javax.portlet.PortletRequest} objects instead of
- * the usual {@link HttpServletRequest}.
+ * the usual {@link javax.servlet.http.HttpServletRequest}.
  *
  * @author <a href="http://community.jboss.org/people/kenfinni">Ken Finnigan</a>
  */
-public class PortletCDIFilter implements ActionFilter, EventFilter, ResourceFilter, RenderFilter {
+public class PortletCDIResponseFilter implements ActionFilter, EventFilter, ResourceFilter, RenderFilter {
 
     /**
      * @see javax.portlet.filter.PortletFilter#init(javax.portlet.filter.FilterConfig)
@@ -81,7 +79,7 @@ public class PortletCDIFilter implements ActionFilter, EventFilter, ResourceFilt
     @Override
     public void doFilter(ActionRequest request, ActionResponse response, FilterChain chain) throws IOException,
             PortletException {
-        chain.doFilter(new HttpServletActionRequestWrapper(request), response);
+        chain.doFilter(new HttpServletActionRequestWrapper(request), new HttpServletActionResponseWrapper(response));
     }
 
     /**
@@ -89,7 +87,7 @@ public class PortletCDIFilter implements ActionFilter, EventFilter, ResourceFilt
      */
     @Override
     public void doFilter(EventRequest request, EventResponse response, FilterChain chain) throws IOException, PortletException {
-        chain.doFilter(new HttpServletEventRequestWrapper(request), response);
+        chain.doFilter(new HttpServletEventRequestWrapper(request), new HttpServletEventResponseWrapper(response));
     }
 
     /**
@@ -98,7 +96,7 @@ public class PortletCDIFilter implements ActionFilter, EventFilter, ResourceFilt
     @Override
     public void doFilter(RenderRequest request, RenderResponse response, FilterChain chain) throws IOException,
             PortletException {
-        chain.doFilter(new HttpServletRenderRequestWrapper(request), response);
+        chain.doFilter(new HttpServletRenderRequestWrapper(request), new HttpServletRenderResponseWrapper(response));
     }
 
     /**
@@ -107,6 +105,6 @@ public class PortletCDIFilter implements ActionFilter, EventFilter, ResourceFilt
     @Override
     public void doFilter(ResourceRequest request, ResourceResponse response, FilterChain chain) throws IOException,
             PortletException {
-        chain.doFilter(new HttpServletResourceRequestWrapper(request), response);
+        chain.doFilter(new HttpServletResourceRequestWrapper(request), new HttpServletResourceResponseWrapper(response));
     }
 }

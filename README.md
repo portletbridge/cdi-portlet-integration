@@ -2,7 +2,8 @@
 
 ## What is this?
 
-This library contains a Portlet Filter that wraps Portlet Request objects with HttpServletRequest so that CDI will work within a JSF portlet that uses a JSF Bridge.
+This library contains one Portlet Filter that wraps Portlet Request objects with HttpServletRequest so that CDI will work within a JSF portlet that uses a JSF Bridge. It also contains
+a second filter that wraps both Portlet Request and Response objects, for when you need CDI to operate on the request and response objects.
 
 ## Configuration
 
@@ -21,6 +22,8 @@ To enable this integration for your JSF portlet, simply add the following filter
         <portlet-name>[Name of your portlet as defined in portlet-name]</portlet-name>
     </filter-mapping>
 
+The above example uses the filter that wraps Portlet Request objects only. If you want to use the filter that wraps Portlet response objects as well, change the *filter-class* tag content with
+`org.gatein.cdi.PortletCDIResponseFilter`.
 
 ## What is supported
 
