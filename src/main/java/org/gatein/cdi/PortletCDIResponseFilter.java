@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source.
- * Copyright 2012, Red Hat, Inc., and individual contributors
+ * Copyright 2013, Red Hat, Inc., and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
  *
@@ -59,11 +59,17 @@ import java.io.IOException;
  */
 public class PortletCDIResponseFilter implements ActionFilter, EventFilter, ResourceFilter, RenderFilter {
 
+    private boolean wrapMultipartRequests = false;
+
     /**
      * @see javax.portlet.filter.PortletFilter#init(javax.portlet.filter.FilterConfig)
      */
     @Override
     public void init(FilterConfig filterConfig) throws PortletException {
+        String enabled = filterConfig.getInitParameter(PortletFilterUtil.ENABLE_MULTIPART_WRAPPING_PARAMETER_NAME);
+        if (enabled != null) {
+            wrapMultipartRequests = Boolean.parseBoolean(enabled);
+        }
     }
 
     /**
@@ -79,7 +85,11 @@ public class PortletCDIResponseFilter implements ActionFilter, EventFilter, Reso
     @Override
     public void doFilter(ActionRequest request, ActionResponse response, FilterChain chain) throws IOException,
             PortletException {
-        chain.doFilter(new HttpServletActionRequestWrapper(request), new HttpServletActionResponseWrapper(response));
+        if (!wrapMultipartRequests && PortletFilterUtil.isMultipartRequest(request)) {
+            chain.doFilter(request, response);
+        } else {
+            chain.doFilter(new HttpServletActionRequestWrapper(request), new HttpServletActionResponseWrapper(response));
+        }
     }
 
     /**
@@ -105,6 +115,10 @@ public class PortletCDIResponseFilter implements ActionFilter, EventFilter, Reso
     @Override
     public void doFilter(ResourceRequest request, ResourceResponse response, FilterChain chain) throws IOException,
             PortletException {
-        chain.doFilter(new HttpServletResourceRequestWrapper(request), new HttpServletResourceResponseWrapper(response));
+        if (!wrapMultipartRequests && PortletFilterUtil.isMultipartRequest(request)) {
+            chain.doFilter(request, response);
+        } else {
+            chain.doFilter(new HttpServletResourceRequestWrapper(request), new HttpServletResourceResponseWrapper(response));
+        }
     }
 }
